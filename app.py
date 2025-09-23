@@ -338,6 +338,6 @@ if __name__ == '__main__':
   app.logger.info(f"📧 SMTP configured for: {SMTP_USER}")
   app.logger.info(f"🎯 Recipient email: {RECIPIENT_EMAIL}")
   app.logger.info(f"🌍 Environment: {NODE_ENV}")
-  app.run(host='0.0.0.0', port=port)
+  app.run(host='127.0.0.1', port=port)
 
 
