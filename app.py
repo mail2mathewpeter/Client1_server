@@ -1,5 +1,7 @@
 import os
 import smtplib
+import logging
+from logging.handlers import RotatingFileHandler 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime
@@ -36,9 +38,7 @@ def setup_logging():
     app.logger.addHandler(file_handler)
     app.logger.setLevel(logging.DEBUG)  # log everything, filter via handlers
 
-
 setup_logging()
-
 def _create_smtp_client():
   """Create and return an authenticated SMTP client."""
   use_ssl = SMTP_PORT == 465
