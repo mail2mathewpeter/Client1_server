@@ -351,13 +351,16 @@ def internal_error(e):
     return "An internal server error occurred. Check logs for details.", 500
 
 if __name__ == '__main__':
-  _verify_smtp_on_startup()
-  app.run(debug=True)
-  port = int(os.environ.get('PORT', '5000'))
-  app.logger.info(f"🚀 Server running on port {port}")
-  app.logger.info(f"📧 SMTP configured for: {SMTP_USER}")
-  app.logger.info(f"🎯 Recipient email: {RECIPIENT_EMAIL}")
-  app.logger.info(f"🌍 Environment: {NODE_ENV}")
-  app.run(host='127.0.0.1', port=port)
+    _verify_smtp_on_startup()
+
+    port = int(os.environ.get('PORT', 5000))  # use port from environment if available
+    host = '0.0.0.0'  # needed for deployment platforms to allow external access
+
+    app.logger.info(f"🚀 Server running on port {port}")
+    app.logger.info(f"📧 SMTP configured for: {SMTP_USER}")
+    app.logger.info(f"🎯 Recipient email: {RECIPIENT_EMAIL}")
+    app.logger.info(f"🌍 Environment: {NODE_ENV}")
+
+    app.run(host=host, port=port, debug=True)
 
 
