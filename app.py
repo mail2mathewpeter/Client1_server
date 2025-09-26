@@ -23,6 +23,21 @@ SMTP_PASS = os.environ.get('SMTP_PASS')
 RECIPIENT_EMAIL = os.environ.get('RECIPIENT_EMAIL')
 NODE_ENV = os.environ.get('NODE_ENV', 'development')
 
+def setup_logging():
+    # Create a rotating log file (5MB max, keep 3 backups)
+    file_handler = RotatingFileHandler("app.log", maxBytes=5 * 1024 * 1024, backupCount=3)
+    file_handler.setLevel(logging.ERROR)  # only log errors
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+    )
+    file_handler.setFormatter(formatter)
+
+    # Attach to app logger
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.DEBUG)  # log everything, filter via handlers
+
+
+setup_logging()
 
 def _create_smtp_client():
   """Create and return an authenticated SMTP client."""
@@ -330,9 +345,14 @@ def _verify_smtp_on_startup():
   except Exception as e:
     app.logger.error(f"SMTP Error: {e}")
 
+@app.errorhandler(500)
+def internal_error(e):
+    app.logger.error("Server Error: %s", e, exc_info=True)
+    return "An internal server error occurred. Check logs for details.", 500
 
 if __name__ == '__main__':
   _verify_smtp_on_startup()
+  app.run(debug=True)
   port = int(os.environ.get('PORT', '5000'))
   app.logger.info(f"🚀 Server running on port {port}")
   app.logger.info(f"📧 SMTP configured for: {SMTP_USER}")
